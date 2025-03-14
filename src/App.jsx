@@ -1,7 +1,9 @@
 import './App.css'
-import Estadisticas from './Components/Estadisticas';
 import Header from './Components/Header';
-import TablaCamaras from './Components/TablaCamaras';
+import Dashboard from "./Pages/Dashboard";
+import NotFound from "./Pages/404";
+import ConsultaDispositivo from "./Pages/ConsultaDispositivo";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import React, { useState, useEffect, useRef } from "react";
 import { io } from "socket.io-client";
 
@@ -10,11 +12,13 @@ import { io } from "socket.io-client";
 function App() {
 
   const [data, setData] = useState([]);
+  const [result, setResult] = useState([]);
   const socketRef = useRef(null);
 
   useEffect(() => {
     // Conecta al backend; ajusta la IP y el puerto según corresponda
-    socketRef.current = io("http://192.168.30.91:3000", {
+    //socketRef.current = io("http://192.168.30.91:3000", {
+    socketRef.current = io("http://192.168.30.57:3000", {
       transports: ["websocket"],
     });
 
@@ -24,6 +28,12 @@ function App() {
       // Emitimos el evento para obtener el estado general
       socketRef.current.emit("getCameraStatus");
     });
+
+    socketRef.current.on("cameraStatusSingle", (response) => {
+      setResult((prevResult) => [...prevResult, response]);
+      //console.log("Resultado verificado on-demand:", result);
+    }
+    );
 
     // Escucha el evento "cameraStatus" para recibir la lista de cámaras
     socketRef.current.on("cameraStatus", (data) => {
@@ -49,20 +59,23 @@ function App() {
   }, []);
 
   // Función para emitir un evento on-demand y verificar una cámara en concreto (por ejemplo, con POSTE "005")
-  const handleOnDemandCheck = () => {
-    socketRef.current.emit("checkCameraByPoste", "005");
+  const handleOnDemandCheck = (poste) => {
+    socketRef.current.emit("checkCameraByPoste", poste);
   };
 
   return (
     <>
-      {/* <div className="min-h-screen bg-gray-300 flex items-center justify-center">
-        <h1 className="text-3xl font-bold text-blue-600">¡Hola, Tailwind!</h1>
-         </div>
-          */}
-      <Header data={data} />
-      <Estadisticas data={data} />
-      <TablaCamaras camaras={data} />
-
+      <BrowserRouter>
+        <Header data={data} />
+        <Routes>
+          <Route path='/' element={<Dashboard data={data} />} />
+          <Route path='/consulta' element={<ConsultaDispositivo data={data} socketEmit={socketRef} result={result} setResult={setResult} />} />
+          {/* Ruta comodín para páginas no encontradas */}
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </BrowserRouter>
+      {/* <Estadisticas data={data} />
+      <TablaCamaras camaras={data} /> */}
     </>
   )
 }

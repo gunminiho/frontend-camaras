@@ -1,6 +1,4 @@
 import DispositivosContainer from "./DispositivosContainer";
-//import data from '../../data.json';
-
 
 
 const Estadisticas = ({ data }) => {
