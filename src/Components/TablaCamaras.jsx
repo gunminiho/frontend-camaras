@@ -91,7 +91,7 @@ const TablaCamaras = ({ camaras }) => {
       <div className="mb-4 flex flex-col sm:flex-row gap-2">
         <input
           type="text"
-          placeholder="Buscar Cam. por POSTE (ej. 35)"
+          placeholder="Buscar por # de cámara..."
           className="border p-2 rounded"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
@@ -140,7 +140,7 @@ const TablaCamaras = ({ camaras }) => {
           <thead>
             <tr className="bg-gray-100">
               <th className="border border-white p-2">Cam #</th>
-              <th className="border border-white p-2">Imagen</th>
+              <th className="border border-white p-2">Dispositivo</th>
               <th className="border border-white p-2">Tipo</th>
               <th className="border border-white p-2">Fecha</th>
               <th className="border border-white p-2">Status</th>
